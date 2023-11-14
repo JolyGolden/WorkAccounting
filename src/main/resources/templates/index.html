@@ -1,0 +1,98 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/navbar}">
+
+<div layout:fragment="main_section">
+    <link rel="stylesheet" th:href="@{/css/index-style.css}" type="text/css">
+
+    <div class="head">
+        <img class="image" th:src="@{/images/user.png}" alt="user photo">
+        <span class="title">Учет рабочего времени</span>
+    </div>
+    <div class="input-group mb-3" sec:authorize="hasRole('MANAGER')">
+        <form th:action="@{/managers/users}">
+            <label class="input-group-text" for="inputGroupSelect01">Users</label>
+            <select  id="inputGroupSelect01" class="form-select" aria-label="Default select example" onchange="this.form.submit()" name="user_id" >
+                <option th:text="${main_user.fullName}"></option>
+                <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.fullName} + ' [' + ${user.id} + ']'"></option>
+            </select>
+        </form>
+    </div>
+
+    <p th:text="${main_user.getFullName()}" sec:authorize="!hasRole('MANAGER')"></p>
+    <hr>
+
+    <div class="container-fluid" >
+        <a class="btn button-1" th:href="@{/users/{id}/stats(id=${main_user.getId()})}" sec:authorize="!hasRole('MANAGER')"> Посмотреть персональную статистику</a>
+        <a class="btn btn-outline-info" th:href="@{/managers/{id}/stats(id=${main_user.getId()})}" sec:authorize="hasRole('MANAGER')"> Посмотреть персональную статистику</a>
+        <span class="calendar">
+            <label for="start">Сегодня:</label>
+            <input type="date" id="start" name="trip-start"
+                   th:value="${today}"
+                   min="2000-01-01" max="2099-12-31" readonly>
+        </span>
+
+        <form class="input-group mb-3 form-1" th:action="@{/}">
+            <input type="text" class="form-control lookfor" name="keyword" placeholder="Search" th:value="${keyword}" >
+            <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><i class="fas fa-search"></i></button>
+        </form>
+    </div>
+    <br>
+    <h1 th:if="${tasks.size() == 0}" th:text="'Список ' + 'задач ' + 'пуст'"></h1>
+
+    <div class="container-fluid" th:if="${tasks.size() > 0}" >
+        <div class="table">
+            <table>
+                <tr>
+                    <th>№</th>
+                    <th>Проект</th>
+                    <th>Задача</th>
+                    <th>Дедлайн</th>
+                    <th>Тип работы</th>
+                    <th>07</th>
+                    <th>08</th>
+                    <th>09</th>
+                    <th>10</th>
+                    <th>11</th>
+                    <th>12</th>
+                    <th>13</th>
+                    <th>14</th>
+                    <th>15</th>
+                    <th>16</th>
+                    <th>17</th>
+                    <th>18</th>
+                    <th>19</th>
+                    <th>20</th>
+                    <th>21</th>
+                    <th>22</th>
+                </tr>
+
+                <tr th:each="task, iter : ${tasks}" >
+                    <td th:text="${iter.index}+1"> </td>
+                    <td th:text="${task.project.name}"></td>
+                    <td th:style="${taskService.daysBeforeDeadline(task)} <= 0 ? 'background: red' : (${taskService.daysBeforeDeadline(task)} == 1 ? 'background: orange' : (${taskService.daysBeforeDeadline(task)} > 3 ? 'background: transparent' : 'background: yellow'))"> <a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}" ></a></td>
+                    <td th:text="${task.deadline}"> </td>
+                    <td th:text="${task?.getTaskDescription(today)?.jobType}"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 7 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 7 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 8 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 8 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 9 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 9 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 10 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 10 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 11 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 11 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 12 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 12 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 13 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 13 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 14 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 14 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 15 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 15 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 16 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 16 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 17 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 17 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 18 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 18 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 19 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 19 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 20 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 20 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 21 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 21 ? 'background: green' : 'background: transparent')"> </td>
+                    <td th:style="${task?.getTaskDescription(today)} == null ? 'background: transparent' : (${task?.getTaskDescription(today)?.getTime_from()?.getHour()} <= 22 and ${task?.getTaskDescription(today)?.getTime_to()?.getHour()} >= 22 ? 'background: green' : 'background: transparent')"> </td>
+                </tr>
+
+            </table>
+        </div>
+    </div>
+</div>
